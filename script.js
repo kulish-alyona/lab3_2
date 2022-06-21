@@ -1,7 +1,7 @@
 var ajax = new XMLHttpRequest();
 
 function firstRequest() {
-    ajax.onreadystatechange = function() {
+    ajax.onreadystatechange = function () {
         if (ajax.readyState === 4) {
             if (ajax.status === 200) {
                 console.dir(ajax.responseText);
@@ -15,11 +15,18 @@ function firstRequest() {
 }
 
 function secondRequest() {
-    ajax.onreadystatechange = function() {
+    ajax.onreadystatechange = function () {
         if (ajax.readyState === 4) {
             if (ajax.status === 200) {
-                console.dir(ajax.responseText);
-                document.getElementById("info-body").innerHTML = ajax.response;
+                console.dir(ajax);
+                let rows = ajax.responseXML.firstChild.children;
+                let result = "";
+                result += "<ol>";
+                for (var i = 0; i < rows.length; i++) {
+                    result += "<li>" + rows[i].children[0].firstChild.nodeValue + "</li>";
+                }
+                document.getElementById("info-body").innerHTML = result;
+                result += "</ol>";
             }
         }
     }
@@ -29,15 +36,29 @@ function secondRequest() {
 }
 
 function thirdRequest() {
-    ajax.onreadystatechange = function() {
+    ajax.onreadystatechange = function () {
         if (ajax.readyState === 4) {
             if (ajax.status === 200) {
-                console.dir(ajax.responseText);
-                document.getElementById("info-body").innerHTML = ajax.response;
+                try {
+                    var responseText = JSON.parse(ajax.responseText);
+                    var newArray = Object.keys(responseText)
+                        .map(function (key) {
+                            return responseText[key];
+                        });
+                    let result = "<ol>";
+
+                    for (var i = 0; i < newArray.length; i++) {
+                        result += "<li>" + newArray[i].netname + "</li>";
+                    }
+                    result = result + "</ol>";
+                    document.getElementById("info-body").innerHTML = result;
+                } catch (e) {
+                    console.log(e)
+                }
             }
         }
-    }
-    var userData = document.getElementById("user_date").value;
-    ajax.open("get", "query_3.php?user_date=" + userData);
+    };
+    var user_date = document.getElementById("user_date").value;
+    ajax.open("get", "query_3.php?user_date=" + user_date);
     ajax.send();
 }
